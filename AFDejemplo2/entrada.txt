@@ -1,8 +1,4 @@
 var1 = 12;
-var2 = 24;
-var3 = 43;
-restar(var3,12);
-miEdad = 25;
-sumar(miEdad,100);
-multiplicar(1,2);
-dividir(48,var2);
+var2 = 54;
+var3 = hola;
+var3 = 54;
