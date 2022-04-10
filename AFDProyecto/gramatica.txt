@@ -1,0 +1,29 @@
+S ::= INICIO
+
+INICIO ::= pr_formulario virgulilla mayorQue mayorQue corcheteI LISTA corcheteD
+
+LISTA ::= COMPONENTE LISTA'
+LISTA' ::= coma COMPONENTE LISTA'
+LISTA' ::= epsilon
+
+COMPONENTE ::= menorQue LISTAATRIBUTOS mayorQue
+
+LISTAATRIBUTOS ::= ATRIBUTO LISTAATRIBUTOS'
+LISTAATRIBUTOS' ::= coma ATRIBUTO LISTAATRIBUTOS'
+LISTAATRIBUTOS' ::= epsilon
+
+ATRIBUTO ::= RESERVADA dospuntos VALOR
+
+RESERVADA ::= pr_tipo
+            | pr_valor
+            | pr_fondo
+            | pr_nombre
+            | pr_valores
+            | pr_evento
+
+VALOR    ::= cadena_"
+            | corcheteI LISTACADENAS corcheteD
+
+LISTACADENAS ::= cadena_' LISTACADENAS'
+LISTACADENAS' ::= coma cadena_' LISTACADENAS'
+LISTACADENAS' ::= epsilon
