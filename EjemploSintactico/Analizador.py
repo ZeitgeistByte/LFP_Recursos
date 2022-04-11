@@ -22,63 +22,49 @@ class AnalizadorLexico:
 
     def agregar_error(self,caracter,linea,columna):
         self.listaErrores.append(Error('Lexema ' + caracter + ' no reconocido en el lenguaje.', linea, columna))
+        self.buffer = ''
 
     def s0(self,caracter : str):
         '''Estado S0'''
         if caracter.isalpha():
             self.estado = 1
             self.buffer += caracter
-            self.columna += 1        
+            self.columna += 1      
+        elif caracter.isdigit():
+            self.estado = 4
+            self.buffer += caracter
+            self.columna += 1               
         elif caracter == '\"':
             self.estado = 2
             self.buffer += caracter
             self.columna += 1     
-        elif caracter == '\'':
-            self.estado = 4
-            self.buffer += caracter
-            self.columna += 1                
-        elif caracter == '<':
+        elif caracter == '.':
             self.estado = 6
             self.buffer += caracter
             self.columna += 1
-            self.simbolo = 'menorQue'
-        elif caracter == '>':
+            self.simbolo = 'punto'
+        elif caracter == '(':
             self.estado = 6
             self.buffer += caracter
             self.columna += 1
-            self.simbolo = 'mayorQue'
-        elif caracter == '~':
+            self.simbolo = 'parentesisIzquierdo'
+        elif caracter == ')':
             self.estado = 6
             self.buffer += caracter
             self.columna += 1
-            self.simbolo = 'virgulilla'                        
+            self.simbolo = 'parentesisDerecho'                        
         elif caracter == ',':
             self.estado = 6
             self.buffer += caracter
             self.columna += 1
             self.simbolo = 'coma'
-        elif caracter == '[':
-            self.estado = 6
-            self.buffer += caracter
-            self.columna += 1
-            self.simbolo = 'corcheteApertura'                        
-        elif caracter == ']':
-            self.estado = 6
-            self.buffer += caracter
-            self.columna += 1
-            self.simbolo = 'corcheteCierre'     
-        elif caracter == ':':
-            self.estado = 6
-            self.buffer += caracter
-            self.columna += 1
-            self.simbolo = 'corcheteCierre'                     
         elif caracter== '\n':
             self.linea += 1
             self.columna = 0
         elif caracter in ['\t',' ']:
             self.columna += 1
         elif caracter == '$':
-            print('Se terminó el análisis')
+            pass
         else:
             self.agregar_error(caracter,self.linea,self.columna)
             self.columna += 1
@@ -91,7 +77,7 @@ class AnalizadorLexico:
             self.buffer += caracter
             self.columna += 1                                               
         else: 
-            if self.buffer in ['formulario','tipo','valor','fondo','valores','nombre','evento']:
+            if self.buffer in ['CREAR','BASE','EN','TABLA','INSERTAR','IMPRIMIR']:
                 self.agregar_token(self.buffer,self.linea,self.columna,'reservada_'+self.buffer)    
                 self.estado = 0
                 self.i -= 1
@@ -100,6 +86,8 @@ class AnalizadorLexico:
                 self.columna += 1
                 self.estado = 0
                 self.i -= 1
+
+             
 
     def s2(self,caracter : str):
         '''Estado S2'''
@@ -113,26 +101,20 @@ class AnalizadorLexico:
 
     def s3(self,caracter : str):
         '''Estado S3'''
-        self.agregar_token(self.buffer,self.linea,self.columna,'Cadena_"')
+        self.agregar_token(self.buffer,self.linea,self.columna,'cadena')
         self.estado = 0
         self.i -= 1
-
 
     def s4(self,caracter : str):
-        '''Estado S4'''
-        if caracter == "'":
-            self.estado = 5
+        '''Estado S1'''
+        if caracter.isdigit():
+            self.estado = 4
             self.buffer += caracter
-            self.columna += 1
-        else:
-            self.buffer += caracter
-            self.columna += 1            
-
-    def s5(self,caracter : str):
-        '''Estado S5'''
-        self.agregar_token(self.buffer,self.linea,self.columna,"Cadena_'")
-        self.estado = 0
-        self.i -= 1
+            self.columna += 1                                               
+        else: 
+            self.agregar_token(self.buffer,self.linea,self.columna,'entero')    
+            self.estado = 0
+            self.i -= 1  
 
     def s6(self,caracter : str):
         '''Estado S6'''
@@ -153,11 +135,9 @@ class AnalizadorLexico:
             elif self.estado == 2:
                 self.s2(cadena[self.i])
             elif self.estado == 3:
-                self.s3(cadena[self.i])  
+                self.s3(cadena[self.i]) 
             elif self.estado == 4:
-                self.s4(cadena[self.i])
-            elif self.estado == 5:
-                self.s5(cadena[self.i])
+                self.s4(cadena[self.i])                   
             elif self.estado == 6:
                 self.s6(cadena[self.i])            
 
